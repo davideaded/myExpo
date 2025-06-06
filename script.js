@@ -1,16 +1,35 @@
+import { Player } from './player.js';
+import { Ray } from './ray.js';
+
 // SETTINGS
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 canvas.width = 960;
 canvas.height = 640;
 
-const TILE_SIZE = 64;
-const GRID_ROW  = canvas.height / TILE_SIZE;
-const GRID_COL  = canvas.width  / TILE_SIZE;
-const GRID = [
+const TILE_SIZE     = 64;
+const GRID_ROW      = canvas.height / TILE_SIZE;
+const GRID_COL      = canvas.width  / TILE_SIZE;
+const FOV           = 60 * (Math.PI / 180);
+const RES           = 4;
+const NUM_RAYS      = Math.floor(canvas.width / RES);
+const ORIGINAL_GRID = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
     [1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+];
+
+const GRID = [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -46,63 +65,48 @@ function renderMap(ctx, grid) {
 
 }
 
-// PLAYER
-
-class Player {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.radius = 20;
-        this.turnDirection = 0; // 1 left, 0 nothing, -1 right
-        this.walkDirection = 0; // 1 front, 0 nothing, -1 back
-        this.rotationAngle = 0;
-        this.moveSpeed = 2.5;
-        this.rotationSpeed = 0.05;
+// RAYCASTER
+class Raycaster {
+    constructor(player) {
+        this.rays = [];
+        this.player = player;
     }
 
-    // this will be called every framerequest loop
-    update() {
-        const moveStep = this.walkDirection * this.moveSpeed;
-        this.rotationAngle += this.turnDirection * this.rotationSpeed;
-        this.x += Math.cos(this.rotationAngle) * moveStep;
-        this.y += Math.sin(this.rotationAngle) * moveStep;
+    castAllRays() {
+        this.rays = [];
+        let rayAngle = this.player.rotationAngle - FOV / 2;
+        for (let i = 0; i < NUM_RAYS; ++i) {
+            const ray = new Ray(rayAngle, this.player);
+            // ray.cast();
+            this.rays.push(ray);
+
+            rayAngle += FOV / NUM_RAYS
+        }
     }
 
     render(ctx) {
-        ctx.beginPath();
-        ctx.moveTo(this.x, this.y);
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
-        ctx.fillStyle = "red";
-        ctx.fill();
-
-        // LINE FOR FOV
-        ctx.strokeStyle = "red";
-        ctx.beginPath();
-        ctx.moveTo(this.x, this.y);
-        ctx.lineTo(
-            this.x + Math.cos(this.rotationAngle) * 100,
-            this.y + Math.sin(this.rotationAngle) * 100
-
-        );
-        ctx.stroke();
+        for (let ray of this.rays) {
+            ray.render(ctx);
+        }
     }
 }
 
+// PLAYER
 const p1 = new Player(canvas.width / 2, canvas.height / 2 );
+const rc = new Raycaster(p1);
 
 // COMMANDS
 document.addEventListener("keydown", (e) => {
-    console.log(p1);
     if (e.key === "w") p1.walkDirection = 1;
     if (e.key === "s") p1.walkDirection = -1;
     if (e.key === "a") p1.turnDirection = -1;
     if (e.key === "d") p1.turnDirection = 1;
 });
-
 document.addEventListener("keyup", (e) => {
     if (["w", "s"].includes(e.key)) p1.walkDirection = 0;
     if (["a", "d"].includes(e.key)) p1.turnDirection = 0;
 });
+
 
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -111,7 +115,9 @@ function gameLoop() {
     p1.update();
     p1.render(ctx);
 
+    rc.castAllRays();
+    rc.render(ctx);
+
     requestAnimationFrame(gameLoop);
 }
-
 gameLoop();
