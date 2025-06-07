@@ -24,14 +24,10 @@ export class Player {
         ctx.fillStyle = "red";
         ctx.fill();
 
-        ctx.strokeStyle = "red";
         ctx.beginPath();
         ctx.moveTo(this.x, this.y);
-        ctx.lineTo(
-            this.x + Math.cos(this.rotationAngle) * 100,
-            this.y + Math.sin(this.rotationAngle) * 100
-
-        );
+        ctx.strokeStyle = "red";
+        ctx.lineTo(this.x + Math.cos(this.rotationAngle) * 100, this.y + Math.sin(this.rotationAngle) * 100);
         ctx.stroke();
     }
 }

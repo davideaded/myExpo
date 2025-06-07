@@ -8,79 +8,82 @@ canvas.width = 960;
 canvas.height = 640;
 
 const TILE_SIZE     = 64;
-const GRID_ROW      = canvas.height / TILE_SIZE;
-const GRID_COL      = canvas.width  / TILE_SIZE;
+const GRID_ROW      = 10;
+const GRID_COL      = 15;
 const FOV           = 60 * (Math.PI / 180);
 const RES           = 4;
-const NUM_RAYS      = Math.floor(canvas.width / RES);
-const ORIGINAL_GRID = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-];
-
-const GRID = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-];
+const NUM_RAYS      = Math.floor((GRID_COL * TILE_SIZE) / RES);
 
 // MAP
-function renderMap(ctx, grid) {
-    for (let i = 0; i < GRID_ROW; ++i) {
-        for (let j = 0; j < GRID_COL; ++j) {
-            ctx.fillStyle = grid[i][j] === 1 ? "#444" : "#ddd";
-            ctx.fillRect(j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+class Map {
+    constructor() {
+        this.grid = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        ];
+    }
+
+    hasWallAt(x, y) {
+        const row = Math.floor(y / TILE_SIZE);
+        const col = Math.floor(x / TILE_SIZE);
+
+        if (row < 0 || row >= this.grid.length || col < 0 || col >= this.grid[0].length) {
+            return true;
         }
+        return this.grid[row][col] === 1;
     }
 
-    ctx.strokeStyle = "black";
-    for (let i = 0; i <= canvas.width; i += TILE_SIZE) {
-        ctx.beginPath();
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i, canvas.height);
-        ctx.stroke();
-    }
+    render(ctx) {
+        for (let i = 0; i < GRID_ROW; ++i) {
+            for (let j = 0; j < GRID_COL; ++j) {
+                ctx.fillStyle = this.grid[i][j] === 1 ? "#444" : "#ddd";
+                ctx.fillRect(j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            }
+        }
 
-    for (let i = 0; i <= canvas.height; i += TILE_SIZE) {
-        ctx.beginPath();
-        ctx.moveTo(0, i);
-        ctx.lineTo(canvas.width, i);
-        ctx.stroke();
-    }
+        ctx.strokeStyle = "black";
+        for (let i = 0; i <= canvas.width; i += TILE_SIZE) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, canvas.height);
+            ctx.stroke();
+        }
 
+        for (let i = 0; i <= canvas.height; i += TILE_SIZE) {
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(canvas.width, i);
+            ctx.stroke();
+        }
+
+    }
 }
 
 // RAYCASTER
 class Raycaster {
-    constructor(player) {
+    constructor(player, map) {
         this.rays = [];
         this.player = player;
+        this.map = map;
     }
 
     castAllRays() {
         this.rays = [];
         let rayAngle = this.player.rotationAngle - FOV / 2;
         for (let i = 0; i < NUM_RAYS; ++i) {
-            const ray = new Ray(rayAngle, this.player);
-            // ray.cast();
+            const ray = new Ray(rayAngle, this.player, this.map);
+            ray.cast(TILE_SIZE, GRID_COL * TILE_SIZE, GRID_ROW * TILE_SIZE);
             this.rays.push(ray);
 
-            rayAngle += FOV / NUM_RAYS
+            rayAngle += FOV / (NUM_RAYS - 1);
         }
     }
 
@@ -91,9 +94,10 @@ class Raycaster {
     }
 }
 
-// PLAYER
+// INSTANCES
+const map = new Map();
 const p1 = new Player(canvas.width / 2, canvas.height / 2 );
-const rc = new Raycaster(p1);
+const rc = new Raycaster(p1, map);
 
 // COMMANDS
 document.addEventListener("keydown", (e) => {
@@ -110,14 +114,15 @@ document.addEventListener("keyup", (e) => {
 
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    renderMap(ctx, GRID);
+    map.render(ctx);
 
     p1.update();
-    p1.render(ctx);
 
     rc.castAllRays();
     rc.render(ctx);
+    p1.render(ctx);
 
     requestAnimationFrame(gameLoop);
 }
+
 gameLoop();
