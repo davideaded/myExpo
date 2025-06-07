@@ -30,9 +30,9 @@ export class Ray {
         const angle = this.rayAngle;
 
         // horizontal
-        let foundHorzWallHit = false;
-        let horzWallHitX = 0;
-        let horzWallHitY = 0;
+        let foundHWallHit = false;
+        let hWallHitX = 0;
+        let hWallHitY = 0;
 
         let yIntercept = Math.floor(this.player.y / tileSize) * tileSize;
         yIntercept += this.isFacingDown ? tileSize : 0;
@@ -46,28 +46,28 @@ export class Ray {
         xStep *= (this.isFacingLeft && xStep > 0) ? -1 : 1;
         xStep *= (this.isFacingRight && xStep < 0) ? -1 : 1;
 
-        let nextHorzX = xIntercept;
-        let nextHorzY = yIntercept;
+        let nextHInterceptX = xIntercept;
+        let nextHInterceptY = yIntercept;
 
-        while (nextHorzX >= 0 && nextHorzX <= gridWidth && nextHorzY >= 0 && nextHorzY <= gridHeight) {
-            const wallCheckX = nextHorzX;
-            const wallCheckY = this.isFacingUp ? nextHorzY - 1 : nextHorzY;
+        while (nextHInterceptX >= 0 && nextHInterceptX <= gridWidth && nextHInterceptY >= 0 && nextHInterceptY <= gridHeight) {
+            const wallCheckX = nextHInterceptX;
+            const wallCheckY = this.isFacingUp ? nextHInterceptY - 1 : nextHInterceptY;
 
             if (this.map.hasWallAt(wallCheckX, wallCheckY)) {
-                foundHorzWallHit = true;
-                horzWallHitX = nextHorzX;
-                horzWallHitY = nextHorzY;
+                foundHWallHit = true;
+                hWallHitX = nextHInterceptX;
+                hWallHitY = nextHInterceptY;
                 break;
             } else {
-                nextHorzX += xStep;
-                nextHorzY += yStep;
+                nextHInterceptX += xStep;
+                nextHInterceptY += yStep;
             }
         }
 
         // vertical
         let foundVertWallHit = false;
-        let vertWallHitX = 0;
-        let vertWallHitY = 0;
+        let vWallHitX = 0;
+        let vWallHitY = 0;
 
         let xInterceptV = Math.floor(this.player.x / tileSize) * tileSize;
         xInterceptV += this.isFacingRight ? tileSize : 0;
@@ -81,39 +81,39 @@ export class Ray {
         yStepV *= (this.isFacingUp && yStepV > 0) ? -1 : 1;
         yStepV *= (this.isFacingDown && yStepV < 0) ? -1 : 1;
 
-        let nextVertX = xInterceptV;
-        let nextVertY = yInterceptV;
+        let nextVInterceptX = xInterceptV;
+        let nextVInterceptY = yInterceptV;
 
-        while (nextVertX >= 0 && nextVertX <= gridWidth && nextVertY >= 0 && nextVertY <= gridHeight) {
-            const wallCheckX = this.isFacingLeft ? nextVertX - 1 : nextVertX;
-            const wallCheckY = nextVertY;
+        while (nextVInterceptX >= 0 && nextVInterceptX <= gridWidth && nextVInterceptY >= 0 && nextVInterceptY <= gridHeight) {
+            const wallCheckX = this.isFacingLeft ? nextVInterceptX - 1 : nextVInterceptX;
+            const wallCheckY = nextVInterceptY;
 
             if (this.map.hasWallAt(wallCheckX, wallCheckY)) {
                 foundVertWallHit = true;
-                vertWallHitX = nextVertX;
-                vertWallHitY = nextVertY;
+                vWallHitX = nextVInterceptX;
+                vWallHitY = nextVInterceptY;
                 break;
             } else {
-                nextVertX += xStepV;
-                nextVertY += yStepV;
+                nextVInterceptX += xStepV;
+                nextVInterceptY += yStepV;
             }
         }
 
         // dist
-        const horzHitDist = foundHorzWallHit
-            ? distanceBetween(this.player.x, this.player.y, horzWallHitX, horzWallHitY)
+        const hHitDist = foundHWallHit
+            ? distanceBetween(this.player.x, this.player.y, hWallHitX, hWallHitY)
             : Number.MAX_VALUE;
 
-        const vertHitDist = foundVertWallHit
-            ? distanceBetween(this.player.x, this.player.y, vertWallHitX, vertWallHitY)
+        const vHitDist = foundVertWallHit
+            ? distanceBetween(this.player.x, this.player.y, vWallHitX, vWallHitY)
             : Number.MAX_VALUE;
 
-        if (horzHitDist < vertHitDist) {
-            this.wallHitX = horzWallHitX;
-            this.wallHitY = horzWallHitY;
+        if (hHitDist < vHitDist) {
+            this.wallHitX = hWallHitX;
+            this.wallHitY = hWallHitY;
         } else {
-            this.wallHitX = vertWallHitX;
-            this.wallHitY = vertWallHitY;
+            this.wallHitX = vWallHitX;
+            this.wallHitY = vWallHitY;
         }
     }
 
