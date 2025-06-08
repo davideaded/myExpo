@@ -98,6 +98,7 @@ class Raycaster {
             let beginDraw = (canvas.height / 2) - (lineHeight / 2);
             let drawEnd = lineHeight;
 
+            ctx.fillStyle = ray.color;
             ctx.fillRect(i*RES, beginDraw, RES, drawEnd);
             i++;
         }
@@ -106,7 +107,7 @@ class Raycaster {
 
 // INSTANCES
 const map = new Map();
-const p1 = new Player(canvas.width / 2, canvas.height / 2 );
+const p1 = new Player(canvas.width / 2, canvas.height / 2, map);
 const rc = new Raycaster(p1, map);
 
 // COMMANDS
@@ -124,13 +125,9 @@ document.addEventListener("keyup", (e) => {
 
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // map.render(ctx);
-
     p1.update();
-
     rc.castAllRays();
     rc.render(ctx);
-    // p1.render(ctx);
 
     requestAnimationFrame(gameLoop);
 }

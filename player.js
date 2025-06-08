@@ -1,5 +1,5 @@
 export class Player {
-    constructor(x, y) {
+    constructor(x, y, map) {
         this.x = x;
         this.y = y;
         this.radius = 20;
@@ -8,13 +8,19 @@ export class Player {
         this.rotationAngle = 0;
         this.moveSpeed = 2.5;
         this.rotationSpeed = 0.05;
+        this.map = map;
     }
 
     update() {
         const moveStep = this.walkDirection * this.moveSpeed;
         this.rotationAngle += this.turnDirection * this.rotationSpeed;
-        this.x += Math.cos(this.rotationAngle) * moveStep;
-        this.y += Math.sin(this.rotationAngle) * moveStep;
+        const newX = this.x + Math.cos(this.rotationAngle) * moveStep;
+        const newY = this.y + Math.sin(this.rotationAngle) * moveStep;
+
+        if (!this.map.hasWallAt(newX, newY)) {
+            this.x = newX;
+            this.y = newY;
+        }
     }
 
     render(ctx) {
@@ -24,10 +30,10 @@ export class Player {
         ctx.fillStyle = "red";
         ctx.fill();
 
-        ctx.beginPath();
-        ctx.moveTo(this.x, this.y);
-        ctx.strokeStyle = "red";
-        ctx.lineTo(this.x + Math.cos(this.rotationAngle) * 100, this.y + Math.sin(this.rotationAngle) * 100);
-        ctx.stroke();
+        // ctx.beginPath();
+        // ctx.moveTo(this.x, this.y);
+        // ctx.strokeStyle = "red";
+        // ctx.lineTo(this.x + Math.cos(this.rotationAngle) * 100, this.y + Math.sin(this.rotationAngle) * 100);
+        // ctx.stroke();
     }
 }

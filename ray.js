@@ -26,6 +26,7 @@ export class Ray {
         this.wallHitY = 0;
 
         this.distance = 0;
+        this.color = 255;
     }
 
     cast(tileSize, gridWidth, gridHeight) {
@@ -114,10 +115,12 @@ export class Ray {
             this.wallHitX = hWallHitX;
             this.wallHitY = hWallHitY;
             this.distance = hHitDist;
+            this.color = "#999"
         } else {
             this.wallHitX = vWallHitX;
             this.wallHitY = vWallHitY;
             this.distance = vHitDist;
+            this.color = "#fff"
         }
 
         this.distance *= Math.cos(this.player.rotationAngle - this.rayAngle);
