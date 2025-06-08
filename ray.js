@@ -119,6 +119,8 @@ export class Ray {
             this.wallHitY = vWallHitY;
             this.distance = vHitDist;
         }
+
+        this.distance *= Math.cos(this.player.rotationAngle - this.rayAngle);
     }
 
 
