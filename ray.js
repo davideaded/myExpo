@@ -24,6 +24,8 @@ export class Ray {
 
         this.wallHitX = 0;
         this.wallHitY = 0;
+
+        this.distance = 0;
     }
 
     cast(tileSize, gridWidth, gridHeight) {
@@ -111,9 +113,11 @@ export class Ray {
         if (hHitDist < vHitDist) {
             this.wallHitX = hWallHitX;
             this.wallHitY = hWallHitY;
+            this.distance = hHitDist;
         } else {
             this.wallHitX = vWallHitX;
             this.wallHitY = vWallHitY;
+            this.distance = vHitDist;
         }
     }
 

@@ -7,12 +7,14 @@ const ctx = canvas.getContext("2d");
 canvas.width = 960;
 canvas.height = 640;
 
-const TILE_SIZE     = 64;
-const GRID_ROW      = 10;
-const GRID_COL      = 15;
-const FOV           = 60 * (Math.PI / 180);
-const RES           = 4;
-const NUM_RAYS      = Math.floor((GRID_COL * TILE_SIZE) / RES);
+const TILE_SIZE        = 64;
+const GRID_ROW         = 10;
+const GRID_COL         = 15;
+const FOV              = 60 * (Math.PI / 180);
+const RES              = 4;
+const NUM_RAYS         = Math.floor((GRID_COL * TILE_SIZE) / RES);
+const PROJECTION_PLANE = 830;
+const WALL_HEIGHT = TILE_SIZE;
 
 // MAP
 class Map {
@@ -88,8 +90,16 @@ class Raycaster {
     }
 
     render(ctx) {
+        let i = 0;
         for (let ray of this.rays) {
-            ray.render(ctx);
+            // ray.render(ctx);
+
+            let lineHeight = (WALL_HEIGHT / ray.distance) * PROJECTION_PLANE;
+            let beginDraw = (canvas.height / 2) - (lineHeight / 2);
+            let drawEnd = lineHeight;
+
+            ctx.fillRect(i*RES, beginDraw, RES, drawEnd);
+            i++;
         }
     }
 }
@@ -114,13 +124,13 @@ document.addEventListener("keyup", (e) => {
 
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    map.render(ctx);
+    // map.render(ctx);
 
     p1.update();
 
     rc.castAllRays();
     rc.render(ctx);
-    p1.render(ctx);
+    // p1.render(ctx);
 
     requestAnimationFrame(gameLoop);
 }
