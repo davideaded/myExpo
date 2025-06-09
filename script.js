@@ -175,6 +175,7 @@ class Raycaster {
                     textureX, 0, 1, quadro.image.height,
                     i * RES, beginDraw, RES, lineHeight
                 );
+
             } else {
                 ctx.fillStyle = ray.color;
                 ctx.fillRect(i * RES, beginDraw, RES, lineHeight);
