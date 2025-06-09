@@ -1,10 +1,14 @@
 # myExpo
 
-An exposition of my projects as an art gallery in Doom-like view, implementing [raycast](https://en.wikipedia.org/wiki/Ray_casting#Ray_casting_in_early_computer_games)
+An exposition of my projects as an art gallery in Doom-like view, implementing [raycast](https://en.wikipedia.org/wiki/Ray_casting#Ray_casting_in_early_computer_games).
 
 ## Images
 
+### Casting rays
 ![Preview](./public/preview1.gif)
+
+### View
+![Preview2](./public/preview2.gif)
 
 > Check [Here](https://davideaded.github.io/myexpo/)
 
