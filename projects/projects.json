@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Shitty Tic Tac Toe",
+    "image": "/toe.png",
+    "description": "Simple tic tac toe game built to explore IIFE and factory function concepts.",
+    "tools": "JavaScript",
+    "links": [
+      "https://github.com/davideaded/shitty-tic-tac-toe",
+      "https://davideaded.github.io/shitty-tic-tac-toe/"
+    ]
+  },
+  {
+    "name": "Where is Waldo",
+    "image": "/wwaldo.png",
+    "description": "A where is waldo game based on pop culture characters. Implemented with React and Rails to exercise the communication between front and back-end. Unfortunately my free back-end host went down.",
+    "tools": "React, Ruby on Rails",
+    "links": [
+      "https://github.com/davideaded/where-is-waldo",
+      "https://main--cerulean-bavarois-35efc7.netlify.app/"
+    ]
+  },
+  {
+    "name": "HubStore",
+    "image": "/fout.png",
+    "description": "A fictitious store based on the Fallout series. My second react project, experimenting with routes and interaction between components.",
+    "tools": "React",
+    "links": [
+      "https://github.com/davideaded/the-hub-store/",
+      "https://main--sparkly-taffy-e9b7c6.netlify.app/"
+    ]
+  },
+  {
+    "name": "Pokemon Memory Card",
+    "image": "/poke.png",
+    "description": "A simple and fun game using the Pokemon API. My first react project.",
+    "tools": "React",
+    "links": [
+      "https://github.com/davideaded/pokemon-memory-card",
+      "https://jade-arithmetic-79e557.netlify.app/"
+    ]
+  },
+  {
+    "name": "Snake Game",
+    "image": "/snake.png",
+    "description": "Classic game made with HTML5 Canvas and JavaScript. Includes score, sounds and different visual styles.",
+    "tools": "HTML5 Canvas, JavaScript and css",
+    "links": [
+      "https://github.com/davideaded/snakegame",
+      "https://davideaded.github.io/snakegame/"
+    ]
+  }
+]

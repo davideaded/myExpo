@@ -14,21 +14,21 @@ const FOV              = 60 * (Math.PI / 180);
 const RES              = 4;
 const NUM_RAYS         = Math.floor((GRID_COL * TILE_SIZE) / RES);
 const PROJECTION_PLANE = 830;
-const WALL_HEIGHT = TILE_SIZE;
+const WALL_HEIGHT      = TILE_SIZE;
 
 // MAP
 class Map {
     constructor() {
         this.grid = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
     }
@@ -69,6 +69,51 @@ class Map {
     }
 }
 
+// IMAGES
+const projectImages = {
+    projects: [],
+
+    loadImages() {
+        const poke = { 
+            image: new Image(),
+            col: 9,
+            row: 3,
+        };
+        poke.image.src = "./projects/poke.png";
+
+        const fout = {
+            image: new Image(),
+            col: 7,
+            row: 3
+        };
+        fout.image.src = "./projects/fout.png";
+
+        const waldo = {
+            image: new Image(),
+            col: 5,
+            row: 3
+        };
+        waldo.image.src = "./projects/wwaldo.png";
+
+        const snake = {
+            image: new Image(),
+            col: 6,
+            row: 6
+        };
+        snake.image.src = "./projects/snake.png";
+
+        const toe = {
+            image: new Image(),
+            col: 8,
+            row: 6
+        };
+        toe.image.src = "./projects/toe.png";
+
+        this.projects.push(poke, fout, waldo, snake, toe);
+    },
+};
+projectImages.loadImages();
+
 // RAYCASTER
 class Raycaster {
     constructor(player, map) {
@@ -90,16 +135,50 @@ class Raycaster {
     }
 
     render(ctx) {
+        ctx.fillStyle = "#87ceeb";
+        ctx.fillRect(0, 0, canvas.width, canvas.height / 2);
+
+        ctx.fillStyle = "#444";
+        ctx.fillRect(0, canvas.height / 2, canvas.width, canvas.height / 2);
+
         let i = 0;
         for (let ray of this.rays) {
-            // ray.render(ctx);
 
             let lineHeight = (WALL_HEIGHT / ray.distance) * PROJECTION_PLANE;
             let beginDraw = (canvas.height / 2) - (lineHeight / 2);
             let drawEnd = lineHeight;
 
-            ctx.fillStyle = ray.color;
-            ctx.fillRect(i*RES, beginDraw, RES, drawEnd);
+            // PROJECT IMAGES
+            ctx.imageSmoothingEnabled = false;
+            const hitRow = Math.floor(ray.wallHitY / TILE_SIZE);
+            const hitCol = Math.floor(ray.wallHitX / TILE_SIZE);
+            const quadro = projectImages.projects.find(
+                q => q.row === hitRow && q.col === hitCol
+            );
+
+
+            if (quadro && quadro.image.complete) {
+                ctx.fillStyle = ray.color;
+                ctx.fillRect(i * RES, beginDraw, RES, lineHeight);
+
+                let textureX;
+                if (ray.wasHitVertical) {
+                    textureX = ray.wallHitY % TILE_SIZE;
+                } else {
+                    textureX = ray.wallHitX % TILE_SIZE;
+                }
+
+                textureX = Math.floor((textureX / TILE_SIZE) * quadro.image.width);
+
+                ctx.drawImage(
+                    quadro.image,
+                    textureX, 0, 1, quadro.image.height,
+                    i * RES, beginDraw, RES, lineHeight
+                );
+            } else {
+                ctx.fillStyle = ray.color;
+                ctx.fillRect(i * RES, beginDraw, RES, lineHeight);
+            }
             i++;
         }
     }
@@ -132,4 +211,4 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-gameLoop();
+window.onload = () => gameLoop();
