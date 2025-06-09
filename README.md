@@ -6,6 +6,7 @@ An exposition of my projects as an art gallery in Doom-like view, implementing [
 
 ### Casting rays
 ![Preview](./public/preview1.gif)
+Early map video.
 
 ### View
 ![Preview2](./public/preview2.gif)
