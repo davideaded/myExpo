@@ -11,7 +11,7 @@ Early map video.
 ### View
 ![Preview2](./public/preview2.gif)
 
-> Check [Here](https://davideaded.github.io/myexpo/)
+### Check online [Here](https://davideaded.github.io/myExpo/)
 
 ---
 
